@@ -165,8 +165,8 @@ async function createWrappedSOL() {
       transactionSignature: signature,
     };
 
-    fs.writeFileSync("scripts/custom-wrapped-sol-info.json", JSON.stringify(wrappedSOLInfo, null, 2));
-    console.log("\n💾 Custom Wrapped SOL info saved to scripts/custom-wrapped-sol-info.json");
+    fs.writeFileSync("custom-wrapped-sol-info.json", JSON.stringify(wrappedSOLInfo, null, 2));
+    console.log("\n💾 Custom Wrapped SOL info saved to custom-wrapped-sol-info.json");
 
   } catch (error) {
     console.error("❌ Error creating Custom Wrapped SOL:", error);

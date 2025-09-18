@@ -145,8 +145,8 @@ async function createTokenB() {
       transactionSignature: signature,
     };
 
-    fs.writeFileSync("scripts/token-b-info.json", JSON.stringify(tokenInfo, null, 2));
-    console.log("\n💾 Token B info saved to scripts/token-b-info.json");
+    fs.writeFileSync("token-b-info.json", JSON.stringify(tokenInfo, null, 2));
+    console.log("\n💾 Token B info saved to token-b-info.json");
 
   } catch (error) {
     console.error("❌ Error creating Token B:", error);

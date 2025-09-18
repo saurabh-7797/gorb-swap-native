@@ -20,7 +20,7 @@ import * as fs from "fs";
 // --- CONFIG ---
 const RPC_ENDPOINT = "https://rpc.gorbchain.xyz";
 const WS_ENDPOINT = "wss://rpc.gorbchain.xyz/ws/";
-const AMM_PROGRAM_ID = new PublicKey("aBfrRgukSYDMgdyQ8y1XNEk4w5u7Ugtz5fPHFnkStJX");
+const AMM_PROGRAM_ID = new PublicKey("EtGrXaRpEdozMtfd8tbkbrbDN8LqZNba3xWTdT3HtQWq");
 const SPL_TOKEN_PROGRAM_ID = new PublicKey("G22oYgZ6LnVcy7v8eSNi2xpNk1NcZiPD8CVKSTut7oZ6");
 const ATA_PROGRAM_ID = new PublicKey("GoATGVNeSXerFerPqTJ8hcED1msPWHHLxao2vwBYqowm");
 
@@ -58,32 +58,40 @@ async function initPoolXNativeSOL() {
     console.log("🚀 TypeScript Script: Initializing Pool X-Native SOL...");
     
     // Load Token X info from scripts folder
-    const tokenXInfo = JSON.parse(fs.readFileSync('scripts/token-x-info.json', 'utf-8'));
+    const tokenXInfo = JSON.parse(fs.readFileSync('token-x-info.json', 'utf-8'));
     const TOKEN_X_MINT = new PublicKey(tokenXInfo.mint);
     
     console.log(`Token X: ${TOKEN_X_MINT.toString()}`);
     console.log(`Native SOL: So11111111111111111111111111111111111111112`);
 
-    // 1. Derive native SOL pool PDA
+    // Native SOL mint address
+    const NATIVE_SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
+
+    // 1. Derive pool PDA for native SOL pool (matching Rust program logic)
     const [poolPDA, poolBump] = await PublicKey.findProgramAddress(
       [Buffer.from("native_sol_pool"), TOKEN_X_MINT.toBuffer()],
       AMM_PROGRAM_ID
     );
-    console.log(`Native SOL Pool PDA: ${poolPDA.toString()}`);
+    console.log(`Pool PDA: ${poolPDA.toString()}`);
 
-    // 2. Derive LP mint PDA for native SOL pool
+    // 2. Derive LP mint PDA (matching Rust program logic)
     const [lpMintPDA, lpMintBump] = await PublicKey.findProgramAddress(
       [Buffer.from("native_sol_lp_mint"), poolPDA.toBuffer()],
       AMM_PROGRAM_ID
     );
     console.log(`LP Mint PDA: ${lpMintPDA.toString()}`);
 
-    // 3. Derive pool token vault PDA (for Token X)
-    const [poolTokenVaultPDA, poolTokenVaultBump] = await PublicKey.findProgramAddress(
+    // 3. Derive vault PDAs (matching Rust program logic)
+    // Note: For native SOL pools, only the token vault is created as PDA
+    // SOL is stored directly in the pool account
+    const [vaultX, vaultXBump] = await PublicKey.findProgramAddress(
       [Buffer.from("native_sol_vault"), poolPDA.toBuffer(), TOKEN_X_MINT.toBuffer()],
       AMM_PROGRAM_ID
     );
-    console.log(`Pool Token Vault PDA: ${poolTokenVaultPDA.toString()}`);
+    // SOL vault is the pool account itself, not a separate PDA
+    const vaultSOL = poolPDA;
+    console.log(`Vault SOL: ${vaultSOL.toString()}`);
+    console.log(`Vault X: ${vaultX.toString()}`);
 
     // 4. User ATAs
     const userTokenX = new PublicKey(tokenXInfo.userATA); // Use ATA from JSON file
@@ -113,31 +121,34 @@ async function initPoolXNativeSOL() {
     // 6.1. Pool, vault, and LP mint accounts are created as PDAs by the program itself
     // 6.2. User LP ATA will be created by the program
 
-    // 6.5. Prepare accounts for InitNativeSOLPool (matching contract order)
+    // 6.5. Prepare accounts for InitPool (matching contract order)
     const accounts = [
       { pubkey: poolPDA, isSigner: false, isWritable: true }, // pool_info
-      { pubkey: TOKEN_X_MINT, isSigner: false, isWritable: false }, // token_mint_info
-      { pubkey: userKeypair.publicKey, isSigner: true, isWritable: true }, // user_info
-      { pubkey: userTokenX, isSigner: false, isWritable: true }, // user_token_account
-      { pubkey: userLP, isSigner: false, isWritable: true }, // user_lp_account
+      { pubkey: NATIVE_SOL_MINT, isSigner: false, isWritable: false }, // token_a_info (SOL)
+      { pubkey: TOKEN_X_MINT, isSigner: false, isWritable: false }, // token_b_info (Token X)
+      { pubkey: vaultSOL, isSigner: false, isWritable: true }, // vault_a (SOL vault - pool account itself)
+      { pubkey: vaultX, isSigner: false, isWritable: true }, // vault_b (Token X vault)
       { pubkey: lpMintPDA, isSigner: false, isWritable: true }, // lp_mint_info
-      { pubkey: poolTokenVaultPDA, isSigner: false, isWritable: true }, // pool_token_vault
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }, // system_program
+      { pubkey: userKeypair.publicKey, isSigner: true, isWritable: true }, // user_info (needs to be writable for SOL transfer)
+      { pubkey: userKeypair.publicKey, isSigner: false, isWritable: true }, // user_token_a_info (SOL - user's main account)
+      { pubkey: userTokenX, isSigner: false, isWritable: true }, // user_token_b_info (Token X)
+      { pubkey: userLP, isSigner: false, isWritable: true }, // user_lp_info
       { pubkey: SPL_TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // token_program
+      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }, // system_program
       { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }, // rent
       { pubkey: ATA_PROGRAM_ID, isSigner: false, isWritable: false }, // ata_program
     ];
 
-    // 6.6. Instruction data (Borsh: InitNativeSOLPool { amount_sol, amount_token })
+    // 6.6. Instruction data (Borsh: InitPool { amount_a, amount_b })
     const data = Buffer.alloc(1 + 8 + 8); // 1 byte discriminator + 2x u64
-    data.writeUInt8(11, 0); // InitNativeSOLPool discriminator (11)
+    data.writeUInt8(0, 0); // InitPool discriminator (0)
     data.writeBigUInt64LE(BigInt(amountSOL), 1);
     data.writeBigUInt64LE(BigInt(amountToken), 9);
     
     console.log(`\n📝 Instruction data: ${data.toString('hex')}`);
 
-    // 6.7. Add InitNativeSOLPool instruction
-    console.log("📝 Adding InitNativeSOLPool instruction...");
+    // 6.7. Add InitPool instruction
+    console.log("📝 Adding InitPool instruction...");
     transaction.add({
       keys: accounts,
       programId: AMM_PROGRAM_ID,
@@ -153,7 +164,7 @@ async function initPoolXNativeSOL() {
       preflightCommitment: "confirmed",
     });
 
-    console.log(`✅ Native SOL Pool X-SOL initialized successfully!`);
+    console.log(`✅ Pool X-SOL initialized successfully!`);
     console.log(`Transaction signature: ${signature}`);
 
     // 8. Check balances after pool initialization
@@ -170,18 +181,22 @@ async function initPoolXNativeSOL() {
     const poolInfo = {
       poolPDA: poolPDA.toString(),
       poolBump,
-      tokenMint: TOKEN_X_MINT.toString(),
+      tokenA: NATIVE_SOL_MINT.toString(),
+      tokenB: TOKEN_X_MINT.toString(),
       lpMint: lpMintPDA.toString(),
       lpMintBump,
-      userTokenX: userTokenX.toString(),
+      vaultA: vaultSOL.toString(),
+      vaultB: vaultX.toString(),
+      userTokenA: userKeypair.publicKey.toString(), // SOL account
+      userTokenB: userTokenX.toString(), // Token X ATA
       userLP: userLP.toString(),
-      initialAmountSOL: amountSOL,
-      initialAmountToken: amountToken,
+      initialAmountA: amountSOL,
+      initialAmountB: amountToken,
       transactionSignature: signature,
     };
 
-    fs.writeFileSync("scripts/pool-x-native-sol-info.json", JSON.stringify(poolInfo, null, 2));
-    console.log("\n💾 Pool X-Native SOL info saved to scripts/pool-x-native-sol-info.json");
+    fs.writeFileSync("pool-x-native-sol-info.json", JSON.stringify(poolInfo, null, 2));
+    console.log("\n💾 Pool X-Native SOL info saved to pool-x-native-sol-info.json");
 
   } catch (error) {
     console.error("❌ Error initializing pool X-Native SOL:", error);

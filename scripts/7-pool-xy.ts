@@ -20,7 +20,7 @@ import * as fs from "fs";
 // --- CONFIG ---
 const RPC_ENDPOINT = "https://rpc.gorbchain.xyz";
 const WS_ENDPOINT = "wss://rpc.gorbchain.xyz/ws/";
-const AMM_PROGRAM_ID = new PublicKey("aBfrRgukSYDMgdyQ8y1XNEk4w5u7Ugtz5fPHFnkStJX");
+const AMM_PROGRAM_ID = new PublicKey("EtGrXaRpEdozMtfd8tbkbrbDN8LqZNba3xWTdT3HtQWq");
 const SPL_TOKEN_PROGRAM_ID = new PublicKey("G22oYgZ6LnVcy7v8eSNi2xpNk1NcZiPD8CVKSTut7oZ6");
 const ATA_PROGRAM_ID = new PublicKey("GoATGVNeSXerFerPqTJ8hcED1msPWHHLxao2vwBYqowm");
 
@@ -59,8 +59,8 @@ async function initPoolXY() {
     console.log("🚀 TypeScript Script: Initializing Pool X-Y...");
     
     // Load Token X and Y info from scripts folder
-    const tokenXInfo = JSON.parse(fs.readFileSync('scripts/token-x-info.json', 'utf-8'));
-    const tokenYInfo = JSON.parse(fs.readFileSync('scripts/token-y-info.json', 'utf-8'));
+    const tokenXInfo = JSON.parse(fs.readFileSync('token-x-info.json', 'utf-8'));
+    const tokenYInfo = JSON.parse(fs.readFileSync('token-y-info.json', 'utf-8'));
     
     const TOKEN_X_MINT = new PublicKey(tokenXInfo.mint);
     const TOKEN_Y_MINT = new PublicKey(tokenYInfo.mint);
@@ -198,8 +198,8 @@ async function initPoolXY() {
       transactionSignature: signature,
     };
 
-    fs.writeFileSync("scripts/pool-xy-info.json", JSON.stringify(poolInfo, null, 2));
-    console.log("\n💾 Pool X-Y info saved to scripts/pool-xy-info.json");
+    fs.writeFileSync("pool-xy-info.json", JSON.stringify(poolInfo, null, 2));
+    console.log("\n💾 Pool X-Y info saved to pool-xy-info.json");
 
   } catch (error) {
     console.error("❌ Error initializing pool X-Y:", error);
@@ -209,3 +209,9 @@ async function initPoolXY() {
 
 // Run the function
 initPoolXY().catch(console.error);
+
+
+
+
+
+
