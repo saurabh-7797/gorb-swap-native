@@ -1,0 +1,9 @@
+{
+  "poolType": "regular",
+  "poolPDA": "87pPUYxe8W1ExxksQJNFJyJTzGNy37RCjuu1v2ocQ9JJ",
+  "swapDirection": "B-to-A",
+  "amountIn": 15000000,
+  "minAmountOut": 8000000,
+  "transactionSignature": "61q2oHTRH866qpggiq137A3XCAKPTgMRqTb6oe4HnQf77fSpKJACkwjpWexf5hCyQkDUwtKndbYi8n3KbUNgjwjE",
+  "timestamp": "2025-09-25T04:52:31.511Z"
+}

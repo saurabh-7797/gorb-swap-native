@@ -1,0 +1,9 @@
+{
+  "poolType": "native",
+  "poolPDA": "AikThhqEZZ3ba6XKje8xutVhepyTqRGYiDWozVKBKUCX",
+  "swapDirection": "Token-to-SOL",
+  "amountIn": 30000000,
+  "minAmountOut": 5000000,
+  "transactionSignature": "5odXusGyHWRfCMRXAEXeEfC5krvvTgAoTL6DJaFdRiNHg4vmkKSXN6wgSKmTvXZsZbHobLEoMduDbvWwb235qVNH",
+  "timestamp": "2025-09-25T04:53:20.764Z"
+}

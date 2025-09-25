@@ -1,0 +1,14 @@
+{
+  "poolType": "regular",
+  "tokenA": "2kvrnSKnK7fF7ruJkwYHQ8JoFmvVxjmA8z9QTh54XpQZ",
+  "tokenB": "9wnh4egqb2phCo6PS9BPTbcFv7ex45Q9qAvkrrnqykuP",
+  "poolPDA": "6qYwxHep4Svdz6Xf3xPYcqS62BYjRRCmVTUqQUVgZp45",
+  "lpMint": "eW3cJJEatprirnEWFahPJNhrFeZydc4hAneTzEBcAN9",
+  "vaultA": "2diUYyFqoDvtS9mfUso1Z4Mo5ikdLGrDNKK74jwd2xgw",
+  "vaultB": "EkJ7o1ZsDPceE76Xoj61qgTRpPrkBzTHXsipLSjDVrwr",
+  "userTokenA": "5o2a92xScB9KKTWNMLwwUc6SMFGfRBQ4iwDyixhom8Py",
+  "userTokenB": "6CagA8Rb2KsFH4HXg5oP6CJs1nNi6B4xLitMzNdUsNSB",
+  "userLP": "6u4dJeAz3TBmRfvxo9sB4hFn3Pmw8GfmH6u5N4hWcwqN",
+  "transactionSignature": "2KAFLbMCh1VkV6LcJSDKJB76KvtJrfyYd9d4LXiqh2MUBQw4wZrLatMsswzZfmeRgw1jDaprSB3LqeXrukm1FtVT",
+  "timestamp": "2025-09-25T05:02:41.149Z"
+}

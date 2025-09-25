@@ -1,0 +1,19 @@
+{
+  "direction": "A-B-C",
+  "amountIn": 10000000,
+  "pool1": {
+    "poolPDA": "6qYwxHep4Svdz6Xf3xPYcqS62BYjRRCmVTUqQUVgZp45",
+    "tokenA": "2kvrnSKnK7fF7ruJkwYHQ8JoFmvVxjmA8z9QTh54XpQZ",
+    "tokenB": "9wnh4egqb2phCo6PS9BPTbcFv7ex45Q9qAvkrrnqykuP"
+  },
+  "pool2": {
+    "poolPDA": "6qYwxHep4Svdz6Xf3xPYcqS62BYjRRCmVTUqQUVgZp45",
+    "tokenA": "2kvrnSKnK7fF7ruJkwYHQ8JoFmvVxjmA8z9QTh54XpQZ",
+    "tokenB": "9wnh4egqb2phCo6PS9BPTbcFv7ex45Q9qAvkrrnqykuP"
+  },
+  "transactionSignatures": [
+    "5CMdach9irQYX3NqVJXr7TKm8oZXjgPVpajgePnoAg9SzNYShwNhm8CPFF4BoodgcU4pNPyMEbveQiUdQPazoFfN",
+    "2H71ssuUyF1LyLbLEpdNvyBwDCfJxT5s7N3TJg1xgDwqDnzM5bdBx8qpzoUhHLbSgZaRrMMb5kWWWux5Y6RJWXoF"
+  ],
+  "timestamp": "2025-09-25T05:08:15.588Z"
+}
